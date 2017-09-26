@@ -11,6 +11,7 @@ class TicketMonitor:
     """
     火车票监控，可监控多个
     """
+
     @staticmethod
     def start(args):
         """
@@ -58,20 +59,10 @@ class TicketMonitor:
     async def fetch(self):
         self.count += 1
         async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(self.url, headers=self.headers) as resp:
-                    print('{}第{}次监控,状态{}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                                                 self.count, resp.status))
-                    return await resp.text()
-            except Exception as e:
-                print(e)
-                if self.error_count <= self.try_number:
-                    self.error_count += 1
-                    self.fetch()
-                else:
-                    self.continue_find = False
-                    print(e)
-                    return str(e)
+            async with session.get(self.url, headers=self.headers) as resp:
+                print('{}第{}次监控,状态{}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                             self.count, resp.status))
+                return await resp.text()
 
     @staticmethod
     def validate_response(html):
