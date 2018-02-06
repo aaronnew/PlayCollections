@@ -5,7 +5,7 @@ from flask import Flask, Response
 from flask import render_template
 from flask import request
 from pymongo import MongoClient
-from bson.json_util import dumps
+import json
 
 app = Flask(__name__)
 client = MongoClient()
@@ -23,7 +23,12 @@ def index():
 def meishi():
     page = int(request.args.get('page', 1))
     skip = (page - 1) * 10
-    data = db_meishi.find().skip(skip).limit(page_size)
+    db_data = db_meishi.find().skip(skip).limit(page_size)
+    data = [{
+        'title': v.get('title'),
+        'address': v.get('address'),
+        'phone': v.get('phone'),
+        'openTime': v.get('openTime')} for v in db_data]
     total = db_meishi.count()
     resp = {
         'total': total,
@@ -31,8 +36,9 @@ def meishi():
         'size': page_size,
         'data': data
     }
-    return Response(dumps(resp).encode('utf-8'), mimetype='application/json; charset=utf-8')
+    return Response(json.dumps(resp).encode('utf-8'), mimetype='application/json; charset=utf-8')
+
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(port=8888)
+    app.run(host='0.0.0.0', port=5000)

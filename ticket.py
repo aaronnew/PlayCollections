@@ -78,8 +78,9 @@ class TicketMonitor:
                 try:
                     with aiohttp.Timeout(timeout=read_timeout):
                         async with session.get(self.url, headers=self.headers) as response:
-                            print('{}第{}次监控,状态{}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                                                         self.count, response.status))
+                            print('{}第{}次监控{}-{}-{},状态{}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                                                 self.count, self.date, self.from_station,
+                                                                 self.to_station, response.status))
                             if response.status == 200:
                                 return await response.text()
                             elif response.status in HTTP_STATUS_CODES_TO_RETRY:
@@ -118,7 +119,7 @@ class TicketMonitor:
 
     async def parse(self):
         html = await self.fetch()
-        print(html)
+        # print(html)
         # 验证数据
         if not self.validate_response(html):
             self.error_count += 1
@@ -174,10 +175,10 @@ class TicketMonitor:
 
         import smtplib
 
-        smtp_server = '*****'
-        from_addr = '*****'
-        password = '****'
-        to_addr = '*****'
+        smtp_server = 'smtp.163.com'
+        from_addr = 'tenlee2012@163.com'
+        password = 'M201331107028'
+        to_addr = ['tenlee2014@qq.com', 'nuage.zhang@qq.com']
 
         def _format_addr(s):
             name, addr = parseaddr(s)
@@ -195,14 +196,14 @@ class TicketMonitor:
         server = smtplib.SMTP(smtp_server, 25)
         server.set_debuglevel(1)
         server.login(from_addr, password)
-        server.sendmail(from_addr, [to_addr], msg.as_string())
+        server.sendmail(from_addr, to_addr, msg.as_string())
         server.quit()
 
 
 if __name__ == '__main__':
     TicketMonitor.start([
-        {'from': '北京', 'to': '上海', 'date': '2017-10-07'},
-        {'from': '北京', 'to': '上海', 'date': '2017-10-09',
+        {'from': '南阳', 'to': '上海', 'date': '2017-10-07'},
+        {'from': '南阳', 'to': '上海', 'date': '2017-10-09',
          'train': {
              'K1108': {
                  '硬座': 100  # 硬座剩余数量低于100 大于 0报警, 默认只要大于0就报警

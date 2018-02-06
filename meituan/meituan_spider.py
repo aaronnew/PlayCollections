@@ -41,6 +41,7 @@ def get_page():
         resp_json = resp.json()
         data = resp_json.get('data')
         if not data or not data.get('poiInfos'):
+            print("Complete!")
             break
         poi_infos = data.get('poiInfos')
         get_list(poi_infos)
@@ -98,4 +99,5 @@ def run():
 
 
 if __name__ == '__main__':
+    print('start meituan spider...')
     run()
