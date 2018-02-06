@@ -6,8 +6,11 @@ from pymongo import MongoClient
 import re
 import datetime
 import time
+import logging
+import logstash
 
-client = MongoClient(host='mongo')
+# client = MongoClient(host='mongo')
+client = MongoClient()
 db = client.meituan
 db_meishi = db.meishi
 db_log = db.log
@@ -24,6 +27,12 @@ reg_name = re.compile(r'"name":"(.*?)"', re.S)  # 店名
 reg_address = re.compile(r'"address":"(.*?)"', re.S)  # 地址
 reg_phone = re.compile(r'"phone":"(.*?)"', re.S)  # 号码
 reg_openTime = re.compile(r'"openTime":"(.*?)"', re.S)  # 营业时间
+
+# logstash 配置
+host = 'localhost'
+logstash_logger = logging.getLogger('python-logstash-logger')
+logstash_logger.setLevel(logging.INFO)
+logstash_logger.addHandler(logstash.TCPLogstashHandler(host, 5000, version=1))
 
 
 def get_page():
@@ -91,6 +100,7 @@ def save_log(response):
         'date': datetime.datetime.now().isoformat()
     }
     db_log.save(info)
+    logstash_logger.info('python-logstash: test extra fields', extra=info)
     time.sleep(0.5)
 
 
