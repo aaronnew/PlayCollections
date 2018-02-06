@@ -1,0 +1,84 @@
+<html>
+<head>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/materialize/0.100.2/css/materialize.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>数据展示</title>
+</head>
+<body>
+<div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo">Logo</a>
+      </div>
+    </nav>
+  </div>
+<div class="container">
+    <table>
+        <thead>
+        <tr>
+            <th data-field="title">店铺名称</th>
+            <th data-field="address">地址</th>
+            <th data-field="phone">电话</th>
+            <th data-field="openTime">营业时间</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        </tbody>
+    </table>
+    <ul class="pagination">
+        <li class="active"><a href="#!">1</a></li>
+        <li class="waves-effect"><a href="#!">2</a></li>
+        <li class=""><a href="#!">3</a></li>
+        <li class="waves-effect"><a href="#!">4</a></li>
+        <li class="waves-effect"><a href="#!">5</a></li>
+    </ul>
+</div>
+<!--Import jQuery before materialize.js-->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/materialize/0.100.2/js/materialize.min.js"></script>
+<script>
+    function initTable(data) {
+        var html = '';
+        for (var i = 0; i < data.length; i++) {
+            html += '<tr>';
+            html += '<td>' + data[i]['title'] + '</td>';
+            html += '<td>' + data[i]['address'] + '</td>';
+            html += '<td>' + data[i]['phone'].join(',') + '</td>';
+            html += '<td>' + (data[i]['openTime'] || []).join(',') + '</td>';
+            html += '</tr>';
+        }
+        $('table tbody').html(html);
+    }
+
+    function initPage(data) {
+        var html = '';
+        var totalPage = Math.ceil(data['total'] / data['size']);
+        for(var i = 1; i <= totalPage; i++) {
+            if (i === data['page']) {
+                html += '<li class="active page"><a>' + i + '</a></li>';
+            }
+            else {
+                html += '<li class="waves-effect page"><a>' + i + '</a></li>';
+            }
+            $('.pagination').html(html);
+        }
+    }
+
+    function getPage(page) {
+        $.getJSON('/meishi?page='+page, function (data) {
+            initPage(data);
+            initTable(data.data);
+        });
+    }
+    $( document ).ready(function() {
+        getPage(1);
+        $(document).on('click','.page',function(){
+            getPage($(this).text());
+        });
+    });
+</script>
+</body>
+</html>

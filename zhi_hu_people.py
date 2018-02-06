@@ -81,4 +81,4 @@ class UserImages:
             cls.find_and_save_images(url)
 
 if __name__ == '__main__':
-    UserImages.get_all_images("yao-yao-xiao-xian-nu-17")
+    UserImages.get_all_images("wu-yue-38-96")
