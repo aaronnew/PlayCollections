@@ -7,7 +7,7 @@ import re
 import datetime
 import time
 
-client = MongoClient()
+client = MongoClient(host='mongo')
 db = client.meituan
 db_meishi = db.meishi
 db_log = db.log

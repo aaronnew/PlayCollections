@@ -6,9 +6,10 @@ from flask import render_template
 from flask import request
 from pymongo import MongoClient
 import json
+from meituan_spider import run
 
 app = Flask(__name__)
-client = MongoClient()
+client = MongoClient(host='mongo')
 db = client.meituan
 db_meishi = db.meishi
 page_size = 10
@@ -17,6 +18,12 @@ page_size = 10
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/spider')
+def spider():
+    run()
+    return Response(json.dumps('{"code":"OK}').encode('utf-8'), mimetype='application/json; charset=utf-8')
 
 
 @app.route('/meishi')
